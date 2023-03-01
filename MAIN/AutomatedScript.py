@@ -26,20 +26,20 @@ M = cv2.getPerspectiveTransform(src_points, dst_points)
 detector = DetectedObjects.DetectedObjects(reference_image)
 detector.getCenterPoints()
 object_list = detector.getContours()
-sorted_list = detector.sortDetectedObjects(object_list)
+# sorted_list = detector.sortDetectedObjects(object_list)
 
 
-# for item in sorted_list:
-#     if item.center_point[0] < 1600 and item.center_point[1] < 900:
-#         center_points.append(item.center_point)
+for item in object_list:
+    if (item.center_point[0] > 230 and item.center_point[0] < 1350) and (item.center_point[1] > 70 and item.center_point[1] < 1050):
+        center_points.append(item.center_point)
 
 # Save the points to a txt file
-with open('MAIN/picked_points.txt', 'w') as f:
-    count = 0
-    for item in object_list:
-        count += 1
-        if count < (len(object_list) - 1):
-            f.write(f"{item.center_point[0]} {item.center_point[1]}\n")
+# with open('MAIN/picked_points.txt', 'w') as f:
+#     count = 0
+#     for item in object_list:
+#         count += 1
+#         if count < (len(object_list) - 1):
+#             f.write(f"{item.center_point[0]} {item.center_point[1]}\n")
 
 print("items detected: ", len(center_points))
 

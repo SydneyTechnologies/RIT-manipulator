@@ -14,7 +14,7 @@ class DetectedObjects():
 
     # Calibration constants
     pixel_cm = 1
-    areaThresh = 1
+    areaThresh = 350
 
     # areaThresh = 20
 
@@ -134,11 +134,15 @@ class DetectedObjects():
         return self.pixel_cm
 
     def sortDetectedObjects(self, list_to_sort):
-        sorted_list = sorted(
-            list_to_sort, key=lambda x: x.getPickScore((0, 450)))
-        # for item in sorted_list:
-        #     frame =
-        # return sorted_list
+        sorted_list = sorted(list_to_sort, key=lambda x: x.getPickScore((0, 450)))
+        accepted_list = []
+        print(len(sorted_list))
+        for item in sorted_list:
+             if (item.center_point[0] > 230 and item.center_point[0] < 1250) and (item.center_point[1] > 70 and item.center_point[1] < 1050):
+                 accepted_list.append(item)
+        print(f"items detected: {len(accepted_list)}")
+                 
+        return accepted_list
 
 
 class PickableObjects():
