@@ -7,5 +7,7 @@ height of drop area: 220mm
 length of drop area: 560mm
 
 Robot Calibration
+minimum height = 485mm
+max height = 600mm
 Start point: x: -263.416mm(-263mm), y: 386.530mm(386mm), z: 449.663mm(449mm)
 End point: x: 161.412mm, y: 774.994mm, z: 463.139
