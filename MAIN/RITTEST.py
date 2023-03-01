@@ -5,7 +5,7 @@ from EpsonController import sendToEpson, Home, clientSocket
 from take_picture import takePicture
 from DetectedObjects import DetectedObjects
 from getWorldCoordinates import getRealWorld
-from TalkToServo import talkToServo
+from TalkToServo import talkToServo, checkDistance
 
 
 SERVO_PORT = "/dev/cu.usbserial-1140"
@@ -56,10 +56,19 @@ while(True):
     sendToEpson(x=worldX, y=worldY, robot_z=600, robot_u=targetU)
 
     talkToServo("s")
-    if arduino.in_waiting > 0:  # check if there's data in the serial buffer
-        data = arduino.readline().decode().strip()  # read the data from the serial port and decode it as a string
-        print("Received:", data) 
+    distance = checkDistance()
+    if distance != 0 and distance != None:
+        if distance < 206: 
+            distance_z =  (600 - distance) + 60 
+             
+        else: 
+             continue
+    
+    # go down 
+    sendToEpson(x=worldX, y=worldY, robot_z=distance_z)
+             
 
+        
 
 
 

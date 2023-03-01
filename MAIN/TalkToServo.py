@@ -15,3 +15,9 @@ def talkToServo(command):
         print("Received:", data)  # print the received data
 
 
+def checkDistance():
+    if arduino.in_waiting > 0:  # check if there's data in the serial buffer
+        data = arduino.readline().decode().strip()  # read the data from the serial port and decode it as a string
+        print("DISTANCE IS:", data) 
+        return int(data)
+
