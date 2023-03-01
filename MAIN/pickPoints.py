@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 from getWorldCoordinates import getRealWorld
-# from EpsonController import sendToEpson
+from EpsonController import sendToEpson
 import math
 # Load the image
-image = cv2.imread('Object1.png')
+image = cv2.imread('MAIN/test/Objects1.png')
 
 # Create a copy of the image to draw circles on
 image_copy = np.copy(image)
@@ -13,12 +13,13 @@ image_copy = np.copy(image)
 coordinates = []
 
 # Define the mouse callback function
+
+
 def pick_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         coordinates.append((x, y))
         new_x, new_y = getRealWorld(x, y)
-        # sendToEpson(x=new_x, y=new_y)
-
+        sendToEpson(x=new_x, y=new_y)
 
         print(f"Pixel coordinates: ({x}, {y})")
 
@@ -31,7 +32,8 @@ def pick_points(event, x, y, flags, param):
         # Draw a circle around the point on the image copy
         cv2.circle(image_copy, (x, y), 10, (255, 0, 0), 2)
         # Put the text on the image
-        cv2.putText(image_copy, f"{math.ceil(new_x)}, {math.ceil(new_y)}", (x, y), font, 1, color, 2)
+        cv2.putText(
+            image_copy, f"{math.ceil(new_x)}, {math.ceil(new_y)}", (x, y), font, 1, color, 2)
 
         # Display the image with circles
         cv2.imshow('image', image_copy)

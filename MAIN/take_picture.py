@@ -1,7 +1,7 @@
 import cv2
 # import keyboard
 
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(1)
 count = 0
 
 while(True):
@@ -13,7 +13,7 @@ while(True):
             count += 1
             print("Take a picture")
             cv2.imwrite(f"MAIN/test/Objects{count}.png", frame)
-            #break
+            # break
 
     # if keyboard.is_pressed("a"):
     #     count += 1
