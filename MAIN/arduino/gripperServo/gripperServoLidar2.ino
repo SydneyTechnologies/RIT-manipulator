@@ -1,46 +1,85 @@
+// This is the code for controlling the gripper and getting distance from LIDAR
+// expecting command from Python: G0/G10/G20/G30/G50 for gripper opening angle, or L to get LIDAR distance
+// Serial speed to PC is 9600, CR/LF does not matter
+
 #include <Servo.h>
 #include <math.h>
 #include <SoftwareSerial.h>
 #include <TFMini.h>
 
-int minAngle = 0;   // gripper fully open
-int maxAngle = 50;  // gripper fully closed
 
-SoftwareSerial mySerial(10, 11);
-TFMini tfmini;
-Servo myservo;
 String msg;
 uint16_t dist;
 
+int minAngle = 7;   // gripper fully open
+int maxAngle = 45;  // gripper fully closed
+
+//SoftwareSerial mySerial(10, 11);
+//TFMini tfmini;
+Servo myservo;
+int trig = 10;
+int echo = 11;
+long duration;
+int distance;
+
 void setup() {
-  Serial.begin(9600);  // initialize serial communication at 9600 baud
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
+  // mySerial.begin(115200);
+  // tfmini.begin(&mySerial);
+  // put your setup code here, to run once:
+  myservo.attach(9);
+  Serial.begin(9600);
+  // check the servo opening & closing
+
+  myservo.write(maxAngle);
+  Serial.println("Gripper fully closed");
+  delay(1000);
+  myservo.write(minAngle);
+  Serial.println("Gripper fully opened");
+
+  // check the LIDAR function
+  // dist = tfmini.getDistance();
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  duration = pulseIn(echo, HIGH);
+  distance = duration * 0.34 / 2;
+  // Serial.print("Sonar distance (cm) = ");
+  Serial.println(distance);
+  Serial.println("Ready, enter command (eg: 'G10/G20/G30/G40/G50' or 'L')");  // case insensitive
 }
 
 void loop() {
-  if (Serial.available()) {  // check if there's data in the serial buffer
-    String inputString = "";  // create an empty string to hold the incoming data
-    while (Serial.available()) {
-      char incomingChar = Serial.read();  // read the incoming character
-      inputString += incomingChar;  // append the character to the input string
-      delay(5);  // wait a short time for the next character
-    }
-    String command = inputString;
-    Serial.println("Received: " + command);  // print the received string to the serial monitor
+  // put your main code here, to run repeatedly:
+
+  while (Serial.available()) {
+    msg = "Invalid command";
+    String command = Serial.readString();
     command.trim();         // get rid of extra spaces or CR/LF if there's any
     command.toLowerCase();  // always convert to lowercase (case insensitive)
-    Serial.println(command);
-    if (command == "lidar" || command == "l") {
-      for (int x = 0; x < 5; x++) { // make 5x reading for reliability
-        dist = tfmini.getDistance();
-        delay(50);
-      }
-      msg = "LIDAR distance in cm = " + String(dist);
+
+    if (command == "sonar" || command == "s") {
+      digitalWrite(trig, LOW);
+      delayMicroseconds(2);
+      digitalWrite(trig, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(trig, LOW);
+      duration = pulseIn(echo, HIGH);
+      distance = duration * 0.34 / 2;
+      msg = String(distance);
     }
     if (command == "gripper 0" || command == "g0") {  // fully open
-      myservo.write(0);
+      myservo.write(7);
       msg = "Gripper 0 fully opened";
     }
-        if (command == "gripper 20" || command == "g20") {
+    if (command == "gripper 10" || command == "g10") {
+      myservo.write(10);
+      msg = "Gripper 10";
+    }
+    if (command == "gripper 20" || command == "g20") {
       myservo.write(20);
       msg = "Gripper 20";
     }
@@ -53,10 +92,10 @@ void loop() {
       msg = "Gripper 40";
     }
     if (command == "gripper 50" || command == "g50") {  // fully closed
-      myservo.write(50);
+      myservo.write(45);
       msg = "Gripper 50 fully closed";
     }
     Serial.println(msg);
-    Serial.println("OK");
   }
+  delay(10);
 }
