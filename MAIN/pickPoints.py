@@ -2,9 +2,12 @@ import cv2
 import numpy as np
 from getWorldCoordinates import getRealWorld
 from EpsonController import sendToEpson
+from take_picture import takePicture
 import math
 # Load the image
-image = cv2.imread('MAIN/test/Objects1.png')
+
+sendToEpson(robot_z=850)
+image = cv2.imread(takePicture())
 
 # Create a copy of the image to draw circles on
 image_copy = np.copy(image)

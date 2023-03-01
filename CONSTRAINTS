@@ -8,8 +8,9 @@ height of drop area: 220mm
 length of drop area: 560mm
 drop point location 
 x_drop: -370mm
-z_drop: 850mm
 y_drop: 570mm
+z_drop: 850mm
+
 
 
 Robot Calibration

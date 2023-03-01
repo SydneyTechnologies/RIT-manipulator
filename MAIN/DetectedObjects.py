@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import math
-
+from getWorldCoordinates import getPixel
 # This class is resposinble for providing all data needed from the detected objects
 
 
@@ -14,7 +14,9 @@ class DetectedObjects():
 
     # Calibration constants
     pixel_cm = 1
-    areaThresh = 350
+    areaThresh = 1050
+
+    distanceThresh = 10
 
     # areaThresh = 20
 
@@ -28,7 +30,7 @@ class DetectedObjects():
             self.gray, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
         gray_norm2 = cv2.normalize(
             gray_norm, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
-        self.blur = cv2.GaussianBlur(gray_norm2, (1, 1), 1)
+        self.blur = cv2.GaussianBlur(gray_norm2, (1, 1), cv2.BORDER_DEFAULT)
         self.filter = cv2.bilateralFilter(self.blur, 10, 55, 55)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
         erosion = cv2.erode(self.filter, kernel, iterations=7)
@@ -40,10 +42,30 @@ class DetectedObjects():
         self.contours = cv2.findContours(
             mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         self.centers = []
+        # self.mergeContours()
         self.objects = self.getContours()
+        
+
+    # def mergeContours(self):
+    #     contours, _ = self.contours
+    #     new_contours = list(contours)
+    #     print(type(contours), type(contours[0]))
+    #     merged_contours = []
+    #     while len(new_contours) > 0:
+    #         contour = new_contours.pop(0)
+    #         for c in new_contours:
+    #             dist = cv2.matchShapes(contour, c, cv2.CONTOURS_MATCH_I1,0)
+    #             if dist < self.distanceThresh:
+    #                 contour = np.concatenate((contour, c))
+    #                 new_contours.remove()
+    #             # if cv2.contourArea(c) > 130 and cv2.arcLength(c, False) < 2000 and cv2.arcLength(c, False) > 20:
+    #             merged_contours.append(c)
+    #         return merged_contours
+    #     # self.contours = merged_contours
+        
 
     def getContours(self):
-        contours, _ = self.contours
+        contours, _= self.contours
         objects = []
         index = 0
         px_cm = self.getDimensions()
@@ -164,6 +186,7 @@ class PickableObjects():
 
     def getPickScore(self, mLoc):
         # mLoc refers to the position of the manipulator
+        mLoc = getPixel(mLoc[0], mLoc[1])
         distance = math.dist(mLoc, self.center_point) / \
             self.MAX_DISTANCE * self.DISTANCE_WEIGHT
         width = (min(self.dimensions)/self.MAX_WIDTH) * self.WIDTH_WEIGHT
