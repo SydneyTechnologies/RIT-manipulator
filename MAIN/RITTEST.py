@@ -18,8 +18,6 @@ while(True):
      
 
     # Open servo then go to the home point
-
-    time.sleep(2)
     talkToServo("g0")
 
     Home()
@@ -34,7 +32,7 @@ while(True):
     # initialize detector
     Detector = DetectedObjects(reference_image)
     # gets the list objects in for of the object class
-    Detector.getCenterPoints()
+    # Detector.getCenterPoints()
 
     object_list = Detector.getContours()
 
@@ -55,17 +53,23 @@ while(True):
     # go to the first center point
     sendToEpson(x=worldX, y=worldY, robot_z=600, robot_u=targetU)
 
-    talkToServo("s")
-    distance = checkDistance()
-    if distance != 0 and distance != None:
-        if distance < 206: 
-            distance_z =  (600 - distance) + 60 
-             
-        else: 
-             continue
+    # distance = int(talkToServo("s"))
+    # print("distance from sensor: ")
+    # print(distance)
+    # if distance != 0 and distance != None:
+    #     if distance < 206: 
+    #         distance_z =  (600 - distance) + 60
+    #         if distance > 95:
+    #               distance_z =  (600 - distance) + 20
+
+    #     else: 
+    #          continue
+        
+    # print("z=")
+    # print(distance_z)
     
-    # go down 
-    sendToEpson(x=worldX, y=worldY, robot_z=distance_z)
+    # # go down 
+    sendToEpson(x=worldX, y=worldY, robot_z=480)
              
 
         
@@ -73,29 +77,13 @@ while(True):
 
 
 
-    # open gripper 
-    time.sleep(0.2)
-    talkToServo("g0")
-
-
-
- 
-
-    time.sleep(0.1)
-    talkToServo("s")
-    if arduino.in_waiting > 0:  # check if there's data in the serial buffer
-        data = arduino.readline().decode().strip()  # read the data from the serial port and decode it as a string
-        print("Received:", data) 
-
-    sendToEpson(worldX, worldY, 520)
-
-
     # close gripper 
     time.sleep(0.2)
-    talkToServo("g30")
+    talkToServo("g40")
+    time.sleep(1)
 
 
-
+    # go up 
     sendToEpson(x=worldX, y=worldY, robot_z=700)
 
 
@@ -109,15 +97,12 @@ while(True):
 
 
     # drop item in box, open gripper
-    time.sleep(0.2)
     talkToServo("g0")
+    time.sleep(1)
 
 
 
     #go home
-    if arduino.in_waiting > 0:  # check if there's data in the serial buffer
-        data = arduino.readline().decode().strip()  # read the data from the serial port and decode it as a string
-        print("Received:", data)  
 
     time.sleep(0.2)
     Home()
